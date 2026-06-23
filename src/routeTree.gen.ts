@@ -11,8 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthSubstituteRouteImport } from './routes/auth.substitute'
-import { Route as AuthAssignerRouteImport } from './routes/auth.assigner'
 import { Route as AuthenticatedSubstituteRouteImport } from './routes/_authenticated/substitute'
 import { Route as AuthenticatedAssignerRouteImport } from './routes/_authenticated/assigner'
 
@@ -23,16 +21,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthSubstituteRoute = AuthSubstituteRouteImport.update({
-  id: '/auth/substitute',
-  path: '/auth/substitute',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthAssignerRoute = AuthAssignerRouteImport.update({
-  id: '/auth/assigner',
-  path: '/auth/assigner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSubstituteRoute = AuthenticatedSubstituteRouteImport.update({
@@ -50,15 +38,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assigner': typeof AuthenticatedAssignerRoute
   '/substitute': typeof AuthenticatedSubstituteRoute
-  '/auth/assigner': typeof AuthAssignerRoute
-  '/auth/substitute': typeof AuthSubstituteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assigner': typeof AuthenticatedAssignerRoute
   '/substitute': typeof AuthenticatedSubstituteRoute
-  '/auth/assigner': typeof AuthAssignerRoute
-  '/auth/substitute': typeof AuthSubstituteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,34 +50,23 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/assigner': typeof AuthenticatedAssignerRoute
   '/_authenticated/substitute': typeof AuthenticatedSubstituteRoute
-  '/auth/assigner': typeof AuthAssignerRoute
-  '/auth/substitute': typeof AuthSubstituteRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/assigner'
-    | '/substitute'
-    | '/auth/assigner'
-    | '/auth/substitute'
+  fullPaths: '/' | '/assigner' | '/substitute'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assigner' | '/substitute' | '/auth/assigner' | '/auth/substitute'
+  to: '/' | '/assigner' | '/substitute'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/assigner'
     | '/_authenticated/substitute'
-    | '/auth/assigner'
-    | '/auth/substitute'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthAssignerRoute: typeof AuthAssignerRoute
-  AuthSubstituteRoute: typeof AuthSubstituteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -110,20 +83,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/substitute': {
-      id: '/auth/substitute'
-      path: '/auth/substitute'
-      fullPath: '/auth/substitute'
-      preLoaderRoute: typeof AuthSubstituteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/assigner': {
-      id: '/auth/assigner'
-      path: '/auth/assigner'
-      fullPath: '/auth/assigner'
-      preLoaderRoute: typeof AuthAssignerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/substitute': {
@@ -159,8 +118,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthAssignerRoute: AuthAssignerRoute,
-  AuthSubstituteRoute: AuthSubstituteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

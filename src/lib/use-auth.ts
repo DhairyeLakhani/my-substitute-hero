@@ -50,7 +50,3 @@ export function useAuth() {
 
   return { session, role, name, loading };
 }
-
-export function nameToEmail(name: string) {
-  return `${name.trim().toLowerCase().replace(/[^a-z0-9]+/g, ".")}@school.local`;
-}
