@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthVerifyRouteImport } from './routes/auth.verify'
 import { Route as AuthSignupRouteImport } from './routes/auth.signup'
+import { Route as AuthSigninRouteImport } from './routes/auth.signin'
 import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
 import { Route as AuthForgotRouteImport } from './routes/auth.forgot'
 import { Route as AuthenticatedSubstituteRouteImport } from './routes/_authenticated/substitute'
@@ -41,6 +42,11 @@ const AuthVerifyRoute = AuthVerifyRouteImport.update({
 const AuthSignupRoute = AuthSignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/substitute': typeof AuthenticatedSubstituteRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
 }
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/substitute': typeof AuthenticatedSubstituteRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
 }
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/_authenticated/substitute': typeof AuthenticatedSubstituteRoute
   '/auth/forgot': typeof AuthForgotRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/signin': typeof AuthSigninRoute
   '/auth/signup': typeof AuthSignupRoute
   '/auth/verify': typeof AuthVerifyRoute
 }
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/substitute'
     | '/auth/forgot'
     | '/auth/reset-password'
+    | '/auth/signin'
     | '/auth/signup'
     | '/auth/verify'
   fileRoutesByTo: FileRoutesByTo
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/substitute'
     | '/auth/forgot'
     | '/auth/reset-password'
+    | '/auth/signin'
     | '/auth/signup'
     | '/auth/verify'
   id:
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/_authenticated/substitute'
     | '/auth/forgot'
     | '/auth/reset-password'
+    | '/auth/signin'
     | '/auth/signup'
     | '/auth/verify'
   fileRoutesById: FileRoutesById
@@ -171,6 +183,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/auth/signup'
       preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof AuthRoute
     }
     '/auth/reset-password': {
@@ -220,6 +239,7 @@ const AuthenticatedRouteRouteWithChildren =
 interface AuthRouteChildren {
   AuthForgotRoute: typeof AuthForgotRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthSigninRoute: typeof AuthSigninRoute
   AuthSignupRoute: typeof AuthSignupRoute
   AuthVerifyRoute: typeof AuthVerifyRoute
 }
@@ -227,6 +247,7 @@ interface AuthRouteChildren {
 const AuthRouteChildren: AuthRouteChildren = {
   AuthForgotRoute: AuthForgotRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthSigninRoute: AuthSigninRoute,
   AuthSignupRoute: AuthSignupRoute,
   AuthVerifyRoute: AuthVerifyRoute,
 }
