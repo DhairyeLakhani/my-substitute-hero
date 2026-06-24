@@ -33,14 +33,7 @@ function SigninPage() {
         email: email.trim().toLowerCase(),
         password,
       });
-      if (error) {
-        if (error.message.toLowerCase().includes("email not confirmed")) {
-          toast.error("Please verify your email first.");
-          navigate({ to: "/auth/verify", search: { email: email.trim().toLowerCase() } });
-          return;
-        }
-        throw error;
-      }
+      if (error) throw error;
       const uid = data.user!.id;
       const { data: roleRow } = await supabase
         .from("user_roles")
