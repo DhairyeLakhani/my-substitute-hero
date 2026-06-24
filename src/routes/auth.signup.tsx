@@ -33,12 +33,11 @@ function SignupPage() {
     setLoading(true);
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
         options: {
           data: { name: name.trim(), role },
-          emailRedirectTo: `${window.location.origin}/auth/verify`,
         },
       });
       if (error) {
@@ -49,8 +48,12 @@ function SignupPage() {
         }
         return;
       }
-      toast.success("Account created! Check your email to verify.");
-      navigate({ to: "/auth/verify", search: { email: cleanEmail } });
+      // Auto-confirm is on, so a session should exist immediately.
+      if (!data.session) {
+        await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+      }
+      toast.success("Account created!");
+      navigate({ to: role === "assigner" ? "/assigner" : "/substitute" });
     } catch (err: any) {
       toast.error(err.message ?? "Sign-up failed");
     } finally {
