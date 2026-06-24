@@ -89,3 +89,31 @@ function SigninPage() {
             />
           </Field>
 
+          <div className="flex justify-end">
+            <Link to="/auth/forgot" className="text-sm text-primary font-medium">
+              Forgot password?
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 active:scale-[0.98] transition disabled:opacity-60"
+          >
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            Sign In
+          </button>
+        </form>
+
+        <p className="text-sm text-muted-foreground text-center mt-6">
+          New here?{" "}
+          <Link to="/auth/signup" search={{ role }} className="text-primary font-semibold">
+            Create an account
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}
+
+
