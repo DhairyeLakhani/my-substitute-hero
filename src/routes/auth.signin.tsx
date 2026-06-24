@@ -16,11 +16,15 @@ export const Route = createFileRoute("/auth/signin")({
   component: SigninPage,
 });
 
+function nameToEmail(name: string) {
+  const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.+|\.+$/g, "");
+  return `${slug}@subdesk.local`;
+}
+
 function SigninPage() {
   const navigate = useNavigate();
   const { role } = Route.useSearch();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +34,7 @@ function SigninPage() {
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
+        email: nameToEmail(name),
         password,
       });
       if (error) throw error;
@@ -73,17 +77,6 @@ function SigninPage() {
               placeholder="Your full name"
             />
           </Field>
-          <Field label="Email">
-            <input
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputCls}
-              placeholder="you@school.edu"
-            />
-          </Field>
           <Field label="Password">
             <input
               type="password"
@@ -122,3 +115,5 @@ function SigninPage() {
     </main>
   );
 }
+
+
