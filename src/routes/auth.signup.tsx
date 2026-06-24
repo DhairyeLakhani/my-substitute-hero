@@ -16,11 +16,15 @@ export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
 });
 
+function nameToEmail(name: string) {
+  const slug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, ".").replace(/^\.+|\.+$/g, "");
+  return `${slug}@subdesk.local`;
+}
+
 function SignupPage() {
   const navigate = useNavigate();
   const { role: urlRole } = Route.useSearch();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,9 +36,9 @@ function SignupPage() {
     if (password.length < 6) return toast.error("Password must be at least 6 characters");
     setLoading(true);
     try {
-      const cleanEmail = email.trim().toLowerCase();
+      const syntheticEmail = nameToEmail(name);
       const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
+        email: syntheticEmail,
         password,
         options: {
           data: { name: name.trim(), role },
@@ -42,15 +46,14 @@ function SignupPage() {
       });
       if (error) {
         if (error.message.toLowerCase().includes("registered")) {
-          toast.error("This email is already registered. Try signing in.");
+          toast.error("This name is already taken. Try signing in or pick a different name.");
         } else {
           toast.error(error.message);
         }
         return;
       }
-      // Auto-confirm is on, so a session should exist immediately.
       if (!data.session) {
-        await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+        await supabase.auth.signInWithPassword({ email: syntheticEmail, password });
       }
       toast.success("Account created!");
       navigate({ to: role === "assigner" ? "/assigner" : "/substitute" });
@@ -69,7 +72,7 @@ function SignupPage() {
       <div className="flex-1 flex flex-col justify-center max-w-sm w-full mx-auto py-6">
         <h1 className="text-2xl font-bold mb-1">Create your account</h1>
         <p className="text-sm text-muted-foreground mb-6">
-          We'll send a verification code to your email
+          Just a name and password — no email needed
         </p>
 
         <form onSubmit={handleSignup} className="space-y-4">
@@ -84,17 +87,7 @@ function SignupPage() {
               placeholder="e.g. Sarah Khan"
             />
           </Field>
-          <Field label="Email">
-            <input
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputCls}
-              placeholder="you@school.edu"
-            />
-          </Field>
+
           <Field label="Password">
             <input
               type="password"
