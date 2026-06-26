@@ -25,6 +25,7 @@ function SubstituteDashboard() {
   const { role, name, session, loading: authLoading } = useAuth();
   const [subs, setSubs] = useState<Sub[]>([]);
   const [loading, setLoading] = useState(true);
+  const [availability, setAvailability] = useState<string>("available");
 
   useEffect(() => {
     if (!authLoading && role && role !== "substitute") {
@@ -46,8 +47,33 @@ function SubstituteDashboard() {
   }
 
   useEffect(() => {
-    if (session) load();
+    if (!session) return;
+    load();
+    supabase
+      .from("profiles")
+      .select("availability_status")
+      .eq("id", session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.availability_status) setAvailability(data.availability_status);
+      });
   }, [session]);
+
+  async function changeAvailability(next: string) {
+    if (!session) return;
+    const prev = availability;
+    setAvailability(next);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ availability_status: next })
+      .eq("id", session.user.id);
+    if (error) {
+      setAvailability(prev);
+      toast.error(error.message);
+    } else {
+      toast.success("Availability updated");
+    }
+  }
 
   async function markReceived(id: string) {
     const { error } = await supabase
@@ -87,14 +113,40 @@ function SubstituteDashboard() {
       </header>
 
       <section className="px-5 pt-5">
-        <div className="rounded-2xl bg-primary text-primary-foreground p-5 mb-6">
+        <div className="rounded-2xl bg-primary text-primary-foreground p-5 mb-4">
           <div className="text-xs uppercase tracking-wide opacity-80">Pending substitutions</div>
           <div className="text-4xl font-bold mt-1">{pending.length}</div>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4 mb-6">
+          <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+            My Availability
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { v: "available", label: "Available" },
+              { v: "unavailable", label: "Unavailable" },
+              { v: "on_leave", label: "On Leave" },
+            ].map((o) => (
+              <button
+                key={o.v}
+                onClick={() => changeAvailability(o.v)}
+                className={`h-10 rounded-xl text-sm font-semibold border transition ${
+                  availability === o.v
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
           All Assignments
         </h2>
+
 
         {loading ? (
           <div className="grid place-items-center py-10">

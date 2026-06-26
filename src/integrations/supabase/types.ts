@@ -16,18 +16,24 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          account_status: string
+          availability_status: string
           created_at: string
           email: string | null
           id: string
           name: string
         }
         Insert: {
+          account_status?: string
+          availability_status?: string
           created_at?: string
           email?: string | null
           id: string
           name: string
         }
         Update: {
+          account_status?: string
+          availability_status?: string
           created_at?: string
           email?: string | null
           id?: string
