@@ -224,6 +224,35 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
+function AvailabilityPill({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    available: { label: "Available", cls: "bg-green-500/15 text-green-700 dark:text-green-400" },
+    unavailable: { label: "Unavailable", cls: "bg-red-500/15 text-red-700 dark:text-red-400" },
+    on_leave: { label: "On Leave", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
+  };
+  const v = map[status] ?? map.available;
+  return (
+    <span className={`text-[10px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5 ${v.cls}`}>
+      {v.label}
+    </span>
+  );
+}
+
+function AccountPill({ status }: { status: string }) {
+  const active = status === "active";
+  return (
+    <span
+      className={`text-[10px] font-semibold uppercase tracking-wide rounded-full px-2 py-0.5 ${
+        active
+          ? "bg-blue-500/15 text-blue-700 dark:text-blue-400"
+          : "bg-muted text-muted-foreground"
+      }`}
+    >
+      {active ? "Active" : "Inactive"}
+    </span>
+  );
+}
+
 function AssignForm({
   substitutes,
   onClose,
