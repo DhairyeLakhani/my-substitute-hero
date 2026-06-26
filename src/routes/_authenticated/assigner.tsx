@@ -362,11 +362,21 @@ function AssignForm({
               className="input"
             >
               {substitutes.length === 0 && <option value="">No substitutes available</option>}
-              {substitutes.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
+              {substitutes.map((s) => {
+                const labelStatus =
+                  s.account_status !== "active"
+                    ? "Inactive"
+                    : s.availability_status === "on_leave"
+                    ? "On Leave"
+                    : s.availability_status === "unavailable"
+                    ? "Unavailable"
+                    : "Available";
+                return (
+                  <option key={s.id} value={s.id}>
+                    {s.name} — {labelStatus}
+                  </option>
+                );
+              })}
             </select>
           </Field>
           <button
