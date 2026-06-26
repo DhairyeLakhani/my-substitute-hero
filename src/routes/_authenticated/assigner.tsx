@@ -52,8 +52,11 @@ function AssignerDashboard() {
     const ids = (roles ?? []).map((r) => r.user_id);
     let profs: Substitute[] = [];
     if (ids.length) {
-      const { data } = await supabase.from("profiles").select("id, name").in("id", ids);
-      profs = data ?? [];
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, name, email, availability_status, account_status")
+        .in("id", ids);
+      profs = (data as Substitute[]) ?? [];
     }
     setSubstitutes(profs);
 
