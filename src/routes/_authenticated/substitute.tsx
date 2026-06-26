@@ -25,6 +25,7 @@ function SubstituteDashboard() {
   const { role, name, session, loading: authLoading } = useAuth();
   const [subs, setSubs] = useState<Sub[]>([]);
   const [loading, setLoading] = useState(true);
+  const [availability, setAvailability] = useState<string>("available");
 
   useEffect(() => {
     if (!authLoading && role && role !== "substitute") {
