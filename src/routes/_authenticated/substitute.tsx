@@ -147,9 +147,6 @@ function SubstituteDashboard() {
           All Assignments
         </h2>
 
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
-          All Assignments
-        </h2>
 
         {loading ? (
           <div className="grid place-items-center py-10">
