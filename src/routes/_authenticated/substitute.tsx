@@ -47,8 +47,33 @@ function SubstituteDashboard() {
   }
 
   useEffect(() => {
-    if (session) load();
+    if (!session) return;
+    load();
+    supabase
+      .from("profiles")
+      .select("availability_status")
+      .eq("id", session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.availability_status) setAvailability(data.availability_status);
+      });
   }, [session]);
+
+  async function changeAvailability(next: string) {
+    if (!session) return;
+    const prev = availability;
+    setAvailability(next);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ availability_status: next })
+      .eq("id", session.user.id);
+    if (error) {
+      setAvailability(prev);
+      toast.error(error.message);
+    } else {
+      toast.success("Availability updated");
+    }
+  }
 
   async function markReceived(id: string) {
     const { error } = await supabase
