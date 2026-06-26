@@ -10,7 +10,13 @@ export const Route = createFileRoute("/_authenticated/assigner")({
   component: AssignerDashboard,
 });
 
-type Substitute = { id: string; name: string };
+type Substitute = {
+  id: string;
+  name: string;
+  email: string | null;
+  availability_status: string;
+  account_status: string;
+};
 type Sub = {
   id: string;
   absent_teacher: string;
