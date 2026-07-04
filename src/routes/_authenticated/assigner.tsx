@@ -272,11 +272,12 @@ function AssignerDashboard() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className="text-[11px] font-medium text-slate-500">
                             {s.date} · Period {s.period}
                           </span>
                           <StatusPill status={s.status} />
+                          {s.assigned_by === myId && <MinePill />}
                         </div>
                         <div className="font-semibold truncate">
                           {s.class_name} — {s.subject}
@@ -291,13 +292,22 @@ function AssignerDashboard() {
                           </span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDelete(s.id)}
-                        className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {s.assigned_by === myId ? (
+                        <button
+                          onClick={() => handleDelete(s.id, s.assigned_by)}
+                          className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0"
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <div
+                          className="h-9 w-9 grid place-items-center rounded-lg text-slate-300 dark:text-slate-700 shrink-0"
+                          title="Only the creator can delete this assignment"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </div>
+                      )}
                     </div>
                   </li>
                 ))}
