@@ -48,7 +48,8 @@ type Filter = "all" | "pending" | "received";
 
 function AssignerDashboard() {
   const navigate = useNavigate();
-  const { role, name, loading: authLoading } = useAuth();
+  const { session, role, name, loading: authLoading } = useAuth();
+  const myId = session?.user.id ?? null;
   const [substitutes, setSubstitutes] = useState<Substitute[]>([]);
   const [subs, setSubs] = useState<Sub[]>([]);
   const [showForm, setShowForm] = useState(false);
