@@ -95,7 +95,11 @@ function AssignerDashboard() {
     load();
   }, []);
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: string, ownerId: string) {
+    if (ownerId !== myId) {
+      toast.error("You can only delete substitutions you created");
+      return;
+    }
     const { error } = await supabase.from("substitutions").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
