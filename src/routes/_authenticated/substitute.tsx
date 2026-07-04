@@ -29,8 +29,8 @@ function SubstituteDashboard() {
 
   useEffect(() => {
     if (!authLoading && role && role !== "substitute") {
-      toast.error("Not a substitute account");
-      navigate({ to: "/" });
+      toast.error("Opening your assigning teacher console");
+      navigate({ to: "/assigner" });
     }
   }, [authLoading, role, navigate]);
 

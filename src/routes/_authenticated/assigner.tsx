@@ -60,8 +60,8 @@ function AssignerDashboard() {
 
   useEffect(() => {
     if (!authLoading && role && role !== "assigner") {
-      toast.error("Not an assigner account");
-      navigate({ to: "/" });
+      toast.error("Opening your substitute dashboard");
+      navigate({ to: "/substitute" });
     }
   }, [authLoading, role, navigate]);
 
