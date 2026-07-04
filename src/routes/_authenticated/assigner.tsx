@@ -38,6 +38,7 @@ type Sub = {
   period: string;
   subject: string;
   assigned_teacher_id: string;
+  assigned_by: string;
   date: string;
   status: string;
 };
