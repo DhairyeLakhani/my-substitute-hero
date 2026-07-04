@@ -38,6 +38,7 @@ type Sub = {
   period: string;
   subject: string;
   assigned_teacher_id: string;
+  assigned_by: string;
   date: string;
   status: string;
 };
@@ -47,7 +48,8 @@ type Filter = "all" | "pending" | "received";
 
 function AssignerDashboard() {
   const navigate = useNavigate();
-  const { role, name, loading: authLoading } = useAuth();
+  const { session, role, name, loading: authLoading } = useAuth();
+  const myId = session?.user.id ?? null;
   const [substitutes, setSubstitutes] = useState<Substitute[]>([]);
   const [subs, setSubs] = useState<Sub[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -93,7 +95,11 @@ function AssignerDashboard() {
     load();
   }, []);
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: string, ownerId: string) {
+    if (ownerId !== myId) {
+      toast.error("You can only delete substitutions you created");
+      return;
+    }
     const { error } = await supabase.from("substitutions").delete().eq("id", id);
     if (error) toast.error(error.message);
     else {
@@ -266,11 +272,12 @@ function AssignerDashboard() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className="text-[11px] font-medium text-slate-500">
                             {s.date} · Period {s.period}
                           </span>
                           <StatusPill status={s.status} />
+                          {s.assigned_by === myId && <MinePill />}
                         </div>
                         <div className="font-semibold truncate">
                           {s.class_name} — {s.subject}
@@ -285,13 +292,22 @@ function AssignerDashboard() {
                           </span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDelete(s.id)}
-                        className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0"
-                        aria-label="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                      {s.assigned_by === myId ? (
+                        <button
+                          onClick={() => handleDelete(s.id, s.assigned_by)}
+                          className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0"
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      ) : (
+                        <div
+                          className="h-9 w-9 grid place-items-center rounded-lg text-slate-300 dark:text-slate-700 shrink-0"
+                          title="Only the creator can delete this assignment"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </div>
+                      )}
                     </div>
                   </li>
                 ))}
@@ -420,11 +436,20 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
+function MinePill() {
+  return (
+    <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-2 py-0.5">
+      Mine
+    </span>
+  );
+}
+
 function StatusPill({ status }: { status: string }) {
   if (status === "received")
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-green-500/15 text-green-700 dark:text-green-400 px-2 py-0.5">
         <CheckCircle2 className="h-3 w-3" /> Received
+
       </span>
     );
   return (
