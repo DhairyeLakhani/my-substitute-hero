@@ -441,6 +441,7 @@ function StatusPill({ status }: { status: string }) {
     return (
       <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-green-500/15 text-green-700 dark:text-green-400 px-2 py-0.5">
         <CheckCircle2 className="h-3 w-3" /> Received
+
       </span>
     );
   return (
