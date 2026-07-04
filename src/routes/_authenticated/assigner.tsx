@@ -436,6 +436,14 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
+function MinePill() {
+  return (
+    <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 px-2 py-0.5">
+      Mine
+    </span>
+  );
+}
+
 function StatusPill({ status }: { status: string }) {
   if (status === "received")
     return (
