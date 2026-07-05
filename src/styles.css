@@ -144,23 +144,11 @@
   }
 
   button {
-    position: relative;
-    overflow: hidden;
+    transition: filter 0.2s ease;
   }
 
-  button::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.15);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s ease-out;
-    pointer-events: none;
-  }
-
-  button:not(:disabled):hover::before {
-    transform: scaleX(1);
+  button:not(:disabled):hover {
+    filter: brightness(0.92);
   }
 }
 
