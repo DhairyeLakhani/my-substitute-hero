@@ -28,7 +28,7 @@ function Home() {
         <Link
           to="/auth"
           search={{ role: "assigner" }}
-          className="group flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-sm active:scale-[0.98] transition-transform"
+          className="group flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-sm active:scale-[0.98] transition-all hover:bg-muted"
         >
           <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary grid place-items-center shrink-0">
             <Users className="h-6 w-6" />
@@ -42,7 +42,7 @@ function Home() {
         <Link
           to="/auth"
           search={{ role: "substitute" }}
-          className="group flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-sm active:scale-[0.98] transition-transform"
+          className="group flex items-center gap-4 rounded-2xl border bg-card p-5 shadow-sm active:scale-[0.98] transition-all hover:bg-muted"
         >
           <div className="h-12 w-12 rounded-xl bg-secondary text-secondary-foreground grid place-items-center shrink-0">
             <UserCheck className="h-6 w-6" />
