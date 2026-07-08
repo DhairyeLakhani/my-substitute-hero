@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Offline — SubDesk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="icon" href="/icon-192.png" />
+    <style>
+      body { font: 15px/1.5 system-ui, -apple-system, sans-serif; background: #fafafa; color: #111; display: grid; place-items: center; min-height: 100vh; margin: 0; padding: 1.5rem; text-align: center; }
+      .card { max-width: 22rem; }
+      h1 { font-size: 1.25rem; margin: 0 0 0.5rem; }
+      p { color: #4b5563; margin: 0 0 1.25rem; }
+      button { padding: 0.55rem 1.1rem; border-radius: 0.5rem; border: 0; background: #4f46e5; color: #fff; font: inherit; cursor: pointer; }
+      .icon { width: 56px; height: 56px; margin: 0 auto 1rem; display: block; border-radius: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="icon" src="/icon-192.png" alt="SubDesk" width="56" height="56" />
+      <h1>You're offline</h1>
+      <p>SubDesk needs an internet connection to load this page. Reconnect and try again.</p>
+      <button onclick="location.reload()">Retry</button>
+    </div>
+  </body>
+</html>
