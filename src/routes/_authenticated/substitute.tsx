@@ -30,6 +30,8 @@ function SubstituteDashboard() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState<string>("available");
+  const { reminder, alarm, ack, wantAlarm, stopAlarm, snoozeAlarm } =
+    useSubstitutionReminders(session?.user.id);
 
   useEffect(() => {
     if (!authLoading && role && role !== "substitute") {
