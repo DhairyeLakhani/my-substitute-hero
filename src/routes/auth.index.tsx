@@ -8,7 +8,7 @@ export const Route = createFileRoute("/auth/")({
 
 function AuthSelectPage() {
   const { role } = Route.useSearch();
-  const roleLabel = role === "assigner" ? "Assigning Teacher" : "Substitution Teacher";
+  const roleLabel = role === "assigner" ? "Admin" : "Substitution Teacher";
 
   return (
     <main className="min-h-screen bg-background px-5 py-6 flex flex-col">
