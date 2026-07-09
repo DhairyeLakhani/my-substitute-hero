@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PeriodScheduleCard } from "@/components/PeriodScheduleCard";
 
 export const Route = createFileRoute("/_authenticated/assigner")({
   head: () => ({ meta: [{ title: "Admin Console — SubDesk" }] }),
