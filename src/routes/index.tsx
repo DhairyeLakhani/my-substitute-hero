@@ -34,7 +34,7 @@ function Home() {
             <Users className="h-6 w-6" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-semibold">Assigning Teacher</div>
+            <div className="font-semibold">Admin</div>
             <div className="text-xs text-muted-foreground">Create and manage substitutions</div>
           </div>
         </Link>
