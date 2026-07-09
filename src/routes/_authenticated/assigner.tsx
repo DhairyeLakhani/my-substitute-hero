@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { PeriodScheduleCard } from "@/components/PeriodScheduleCard";
 
 export const Route = createFileRoute("/_authenticated/assigner")({
   head: () => ({ meta: [{ title: "Admin Console — SubDesk" }] }),
@@ -370,6 +371,9 @@ function AssignerDashboard() {
           }}
         />
       )}
+      <div className="max-w-3xl mx-auto px-4 mt-6">
+        <PeriodScheduleCard />
+      </div>
     </main>
   );
 }

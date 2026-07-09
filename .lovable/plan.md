@@ -1,46 +1,58 @@
-# Assigner Dashboard Redesign
 
-Rebuild `src/routes/_authenticated/assigner.tsx` as an admin console that looks and behaves distinctly from the substitute view. No backend/schema changes — purely a frontend/presentation rework using existing data.
+## Goal
 
-## Layout
+Remind a substitute teacher 10 min before their period, and play a stoppable/snoozable alarm 5 min before if they don't acknowledge.
 
-```text
-┌────────────────────────────────────────────┐
-│  Admin Console            [name]  [logout] │  ← dark slate header strip
-├────────────────────────────────────────────┤
-│  ▓ Stat  ▓ Stat  ▓ Stat  ▓ Stat            │  ← 2x2 on mobile, 4-up on sm+
-│  Teachers Available Pending  Today          │
-├────────────────────────────────────────────┤
-│  [ + Add Substitution ]  [ View Teachers ] │  ← two primary command buttons
-├────────────────────────────────────────────┤
-│  Tab: Assignments  |  Teachers              │
-│  ── filter chips: All / Pending / Received  │
-│  ── list of cards (assignments or teachers) │
-└────────────────────────────────────────────┘
-```
+## Period → time mapping
 
-## Sections
+New table `period_schedule` (assigner-managed): `period` (text, unique), `start_time` (time), `sort_order` (int). Seeded with periods 1–8 at typical times. Editable via a small "Period Schedule" card on the Assigner dashboard.
 
-1. **Header band** — darker `bg-slate-900 text-slate-50` strip with "Admin Console" eyebrow, user name, sign-out icon. Visually separates from the light-themed substitute page.
-2. **Stat cards (4)** — Total Teachers, Available Now, Pending Assignments, Today's Assignments. Each is a compact card with icon, big number, label. Derived from already-loaded `substitutes` and `subs`.
-3. **Command bar** — two prominent buttons:
-   - **Add Substitution** → opens existing `AssignForm` modal (replaces the floating FAB).
-   - **View Teachers** → switches the tab below to the Teachers list (and scrolls to it).
-4. **Tabs** — `Assignments` (default) and `Teachers`.
-   - *Assignments tab*: filter chips (All / Pending / Received), reuse existing card design but tightened; keep delete action.
-   - *Teachers tab*: table-style rows on desktop, stacked cards on mobile. Columns: Name, Email, Availability, Account, quick "Assign" button that opens `AssignForm` pre-filled with that teacher.
-5. **Empty states** — distinct illustrations/copy per tab.
+Reminder time = `substitutions.date + start_time - 10 min`. Alarm time = -5 min.
 
-## Visual differentiation from substitute page
+## Delivery: in-app + Web Push
 
-- Dark header band vs substitute's light header.
-- Stat grid at the top (substitute has none).
-- Tabbed content vs substitute's single scroll.
-- Slate/indigo accent palette for admin chrome; status pills keep their semantic colors.
-- Remove floating FAB; commands live in the command bar.
+### In-app scheduler (tab open)
+- Hook `useSubstitutionReminders` on substitute dashboard.
+- Loads upcoming pending subs joined with `period_schedule`; sets per-sub timers for T-10 and T-5.
+- At T-10: browser `Notification` (if permission granted) + in-app modal with:
+  - **"OK, I remember"** → sets `reminder_ack = true`, cancels T-5 alarm.
+  - **"Remind me with alarm"** → sets `alarm_requested = true`; alarm fires at T-5.
+- At T-5 (no ack, or alarm_requested): full-screen `AlarmModal` looping bundled `src/assets/alarm.mp3` with **Stop** and **Snooze 5 min** buttons.
 
-## Files touched
+### Web Push (tab closed; Android/desktop, iOS only when installed as PWA)
+- Generate VAPID keys via `generate_secret` → `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`. Public key mirrored to `VITE_VAPID_PUBLIC_KEY` via `set_secret`.
+- Table `push_subscriptions` (user_id, endpoint, p256dh, auth). RLS: users manage own.
+- Substitute dashboard: "Enable reminders" button requests Notification permission and subscribes.
+- Extend service worker via `vite-plugin-pwa` `injectManifest` mode so we own `sw.ts`: handle `push` (show notification with `ack` / `alarm` actions) and `notificationclick` (POST to `/api/public/hooks/reminder-ack` with HMAC-signed token, or `postMessage` to open clients to trigger alarm).
+- Route `POST /api/public/hooks/reminder-ack` — verifies HMAC token, updates substitution flags.
+- Route `POST /api/public/hooks/send-reminders` — apikey-protected; called by pg_cron every minute:
+  - Sends reminder push for subs due in next minute, marks `reminder_sent_at`.
+  - Sends alarm push for subs at T-5 with no ack, marks `alarm_sent_at`.
+- pg_cron: `* * * * *` hitting the stable `project--<id>.lovable.app` URL.
 
-- `src/routes/_authenticated/assigner.tsx` — full rewrite of presentation; reuse existing `AssignForm`, data loading, and pill components. Add `assignPrefillId` state so the Teachers tab's per-row Assign button opens the modal with that teacher selected (small prop addition to `AssignForm`).
+## Schema
 
-No DB migrations. No changes to substitute page, auth, or routing.
+- `substitutions` adds: `reminder_sent_at timestamptz`, `reminder_ack boolean default false`, `alarm_requested boolean default false`, `alarm_sent_at timestamptz`.
+- New: `period_schedule`, `push_subscriptions`. All with proper GRANTs and RLS.
+
+## Server functions (`src/lib/reminders.functions.ts`)
+- `ackReminder({ substitutionId })`
+- `requestAlarm({ substitutionId })`
+- `savePushSubscription({ endpoint, p256dh, auth })`
+- `deletePushSubscription({ endpoint })`
+- `listUpcomingReminders()` — returns joined sub + start_time for scheduler.
+
+Uses `requireSupabaseAuth`. Helpers (webpush send, HMAC sign/verify) live in `src/lib/push.server.ts`.
+
+## New files
+- `supabase/migrations/*_reminders.sql`
+- `src/lib/reminders.ts`, `src/lib/reminders.functions.ts`, `src/lib/push.server.ts`, `src/lib/push-client.ts`
+- `src/routes/api/public/hooks/send-reminders.ts`, `src/routes/api/public/hooks/reminder-ack.ts`
+- `src/components/ReminderModal.tsx`, `src/components/AlarmModal.tsx`, `src/components/PeriodScheduleCard.tsx`, `src/components/EnableRemindersButton.tsx`
+- `src/assets/alarm.mp3` (bundled royalty-free tone)
+- Custom `src/sw.ts` (injectManifest) replacing generated SW; keeps offline caching.
+
+## Caveats to surface
+- iOS Safari: web push requires app installed to Home Screen (PWA already set up).
+- Two-button notification actions render on Android; on desktop the notification body click defaults to opening the app and starting alarm.
+- In-app timers only run while the tab is open; push covers the rest.

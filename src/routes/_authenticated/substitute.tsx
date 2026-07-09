@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { LogOut, Loader2, CheckCircle2, Clock, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useSubstitutionReminders } from "@/hooks/use-substitution-reminders";
+import { ReminderModal } from "@/components/ReminderModal";
+import { AlarmModal } from "@/components/AlarmModal";
+import { EnableRemindersButton } from "@/components/EnableRemindersButton";
 
 export const Route = createFileRoute("/_authenticated/substitute")({
   head: () => ({ meta: [{ title: "My Substitutions — SubDesk" }] }),
@@ -26,6 +30,8 @@ function SubstituteDashboard() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [loading, setLoading] = useState(true);
   const [availability, setAvailability] = useState<string>("available");
+  const { reminder, alarm, ack, wantAlarm, stopAlarm, snoozeAlarm } =
+    useSubstitutionReminders(session?.user.id);
 
   useEffect(() => {
     if (!authLoading && role && role !== "substitute") {
@@ -143,6 +149,12 @@ function SubstituteDashboard() {
           </div>
         </div>
 
+        <div className="mb-6">
+          <EnableRemindersButton />
+        </div>
+
+
+
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
           All Assignments
         </h2>
@@ -194,6 +206,21 @@ function SubstituteDashboard() {
           </ul>
         )}
       </section>
+
+      {reminder && (
+        <ReminderModal
+          sub={reminder.sub}
+          onAck={() => ack(reminder.sub.id)}
+          onWantAlarm={() => wantAlarm(reminder.sub.id)}
+        />
+      )}
+      {alarm && (
+        <AlarmModal
+          sub={alarm.sub}
+          onStop={() => stopAlarm(alarm.sub.id)}
+          onSnooze={() => snoozeAlarm(alarm.sub.id)}
+        />
+      )}
     </main>
   );
 }
