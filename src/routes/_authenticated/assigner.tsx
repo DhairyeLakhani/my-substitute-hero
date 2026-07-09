@@ -371,6 +371,9 @@ function AssignerDashboard() {
           }}
         />
       )}
+      <div className="max-w-3xl mx-auto px-4 mt-6">
+        <PeriodScheduleCard />
+      </div>
     </main>
   );
 }
