@@ -149,6 +149,12 @@ function SubstituteDashboard() {
           </div>
         </div>
 
+        <div className="mb-6">
+          <EnableRemindersButton />
+        </div>
+
+
+
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
           All Assignments
         </h2>
