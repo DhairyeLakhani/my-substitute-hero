@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { LogOut, Loader2, CheckCircle2, Clock, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useSubstitutionReminders } from "@/hooks/use-substitution-reminders";
+import { ReminderModal } from "@/components/ReminderModal";
+import { AlarmModal } from "@/components/AlarmModal";
+import { EnableRemindersButton } from "@/components/EnableRemindersButton";
 
 export const Route = createFileRoute("/_authenticated/substitute")({
   head: () => ({ meta: [{ title: "My Substitutions — SubDesk" }] }),
