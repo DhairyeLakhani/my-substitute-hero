@@ -206,6 +206,21 @@ function SubstituteDashboard() {
           </ul>
         )}
       </section>
+
+      {reminder && (
+        <ReminderModal
+          sub={reminder.sub}
+          onAck={() => ack(reminder.sub.id)}
+          onWantAlarm={() => wantAlarm(reminder.sub.id)}
+        />
+      )}
+      {alarm && (
+        <AlarmModal
+          sub={alarm.sub}
+          onStop={() => stopAlarm(alarm.sub.id)}
+          onSnooze={() => snoozeAlarm(alarm.sub.id)}
+        />
+      )}
     </main>
   );
 }
