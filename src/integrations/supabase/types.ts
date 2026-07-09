@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      period_schedule: {
+        Row: {
+          created_at: string
+          id: string
+          period: string
+          sort_order: number
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period: string
+          sort_order?: number
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period?: string
+          sort_order?: number
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: string
@@ -41,9 +68,38 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       substitutions: {
         Row: {
           absent_teacher: string
+          alarm_requested: boolean
+          alarm_sent_at: string | null
           assigned_by: string
           assigned_teacher_id: string
           class_name: string
@@ -51,11 +107,15 @@ export type Database = {
           date: string
           id: string
           period: string
+          reminder_ack: boolean
+          reminder_sent_at: string | null
           status: string
           subject: string
         }
         Insert: {
           absent_teacher: string
+          alarm_requested?: boolean
+          alarm_sent_at?: string | null
           assigned_by: string
           assigned_teacher_id: string
           class_name: string
@@ -63,11 +123,15 @@ export type Database = {
           date?: string
           id?: string
           period: string
+          reminder_ack?: boolean
+          reminder_sent_at?: string | null
           status?: string
           subject: string
         }
         Update: {
           absent_teacher?: string
+          alarm_requested?: boolean
+          alarm_sent_at?: string | null
           assigned_by?: string
           assigned_teacher_id?: string
           class_name?: string
@@ -75,6 +139,8 @@ export type Database = {
           date?: string
           id?: string
           period?: string
+          reminder_ack?: boolean
+          reminder_sent_at?: string | null
           status?: string
           subject?: string
         }
