@@ -62,6 +62,18 @@ export function FreePeriodsCard({ userId }: { userId: string }) {
     setSaving(null);
   }
 
+  async function clearAll() {
+    setSaving("all");
+    const { error } = await supabase
+      .from("free_periods")
+      .delete()
+      .eq("user_id", userId)
+      .eq("date", date);
+    if (error) toast.error(error.message);
+    else setFree(new Set());
+    setSaving(null);
+  }
+
   return (
     <div className="rounded-2xl border bg-card p-4 mb-6">
       <div className="flex items-center gap-2 mb-1">
