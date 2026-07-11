@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Field, inputCls } from "./auth";
+import { Field, inputCls, PasswordInput } from "./auth";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -78,22 +78,12 @@ function SigninPage() {
             />
           </Field>
           <Field label="Password">
-            <input
-              type="password"
-              autoComplete="current-password"
-              required
+            <PasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputCls}
+              onChange={setPassword}
               placeholder="Your password"
             />
           </Field>
-
-          <div className="flex justify-end">
-            <Link to="/auth/forgot" className="text-sm text-primary font-medium">
-              Forgot password?
-            </Link>
-          </div>
 
           <button
             type="submit"

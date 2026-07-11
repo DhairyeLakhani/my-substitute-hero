@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Field, inputCls } from "./auth";
+import { Field, inputCls, PasswordInput } from "./auth";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -89,14 +89,11 @@ function SignupPage() {
           </Field>
 
           <Field label="Password">
-            <input
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={6}
+            <PasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputCls}
+              onChange={setPassword}
+              autoComplete="new-password"
+              minLength={6}
               placeholder="At least 6 characters"
             />
           </Field>

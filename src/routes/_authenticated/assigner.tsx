@@ -14,7 +14,6 @@ import {
   CalendarDays,
   ListChecks,
   ShieldCheck,
-  Mail,
   ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -28,7 +27,6 @@ export const Route = createFileRoute("/_authenticated/assigner")({
 type Substitute = {
   id: string;
   name: string;
-  email: string | null;
   availability_status: string;
   account_status: string;
 };
@@ -77,7 +75,7 @@ function AssignerDashboard() {
     if (ids.length) {
       const { data } = await supabase
         .from("profiles")
-        .select("id, name, email, availability_status, account_status")
+        .select("id, name, availability_status, account_status")
         .in("id", ids);
       profs = (data as Substitute[]) ?? [];
     }
@@ -338,9 +336,6 @@ function AssignerDashboard() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold text-sm truncate">{s.name}</div>
-                      <div className="text-xs text-slate-500 truncate flex items-center gap-1">
-                        <Mail className="h-3 w-3" /> {s.email ?? "—"}
-                      </div>
                       <div className="flex gap-1.5 mt-1.5">
                         <AvailabilityPill status={s.availability_status} />
                         <AccountPill status={s.account_status} />
