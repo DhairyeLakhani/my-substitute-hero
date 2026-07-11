@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      free_periods: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          period: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          id?: string
+          period: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          period?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       period_schedule: {
         Row: {
           created_at: string

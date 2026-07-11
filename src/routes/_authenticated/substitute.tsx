@@ -8,6 +8,7 @@ import { useSubstitutionReminders } from "@/hooks/use-substitution-reminders";
 import { ReminderModal } from "@/components/ReminderModal";
 import { AlarmModal } from "@/components/AlarmModal";
 import { EnableRemindersButton } from "@/components/EnableRemindersButton";
+import { FreePeriodsCard } from "@/components/FreePeriodsCard";
 
 export const Route = createFileRoute("/_authenticated/substitute")({
   head: () => ({ meta: [{ title: "My Substitutions — SubDesk" }] }),
@@ -152,6 +153,8 @@ function SubstituteDashboard() {
         <div className="mb-6">
           <EnableRemindersButton />
         </div>
+
+        {session && <FreePeriodsCard userId={session.user.id} />}
 
 
 
