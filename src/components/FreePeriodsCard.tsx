@@ -105,8 +105,19 @@ export function FreePeriodsCard({ userId }: { userId: string }) {
           })}
         </div>
       )}
-      <div className="text-[11px] text-muted-foreground mt-3">
-        {free.size} of {periods.length} marked free
+      <div className="flex items-center justify-between mt-3">
+        <div className="text-[11px] text-muted-foreground">
+          {free.size} of {periods.length} marked free
+        </div>
+        {free.size > 0 && (
+          <button
+            onClick={clearAll}
+            className="text-[11px] font-medium text-destructive hover:underline"
+            disabled={saving === "all"}
+          >
+            Clear all
+          </button>
+        )}
       </div>
     </div>
   );
