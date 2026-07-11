@@ -46,7 +46,6 @@ export type Database = {
           account_status: string
           availability_status: string
           created_at: string
-          email: string | null
           id: string
           name: string
         }
@@ -54,7 +53,6 @@ export type Database = {
           account_status?: string
           availability_status?: string
           created_at?: string
-          email?: string | null
           id: string
           name: string
         }
@@ -62,7 +60,6 @@ export type Database = {
           account_status?: string
           availability_status?: string
           created_at?: string
-          email?: string | null
           id?: string
           name?: string
         }
