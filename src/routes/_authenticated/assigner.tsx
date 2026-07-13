@@ -506,25 +506,38 @@ function AssignForm({
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState(false);
   const [freePeriods, setFreePeriods] = useState<string[]>([]);
+  const [takenPeriods, setTakenPeriods] = useState<string[]>([]);
   const [loadingFree, setLoadingFree] = useState(false);
 
   useEffect(() => {
     if (!assignedTo || !date) {
       setFreePeriods([]);
+      setTakenPeriods([]);
       return;
     }
     let cancelled = false;
     (async () => {
       setLoadingFree(true);
-      const { data } = await supabase
-        .from("free_periods")
-        .select("period")
-        .eq("user_id", assignedTo)
-        .eq("date", date);
+      const [{ data: freeData }, { data: takenData }] = await Promise.all([
+        supabase
+          .from("free_periods")
+          .select("period")
+          .eq("user_id", assignedTo)
+          .eq("date", date),
+        supabase
+          .from("substitutions")
+          .select("period")
+          .eq("assigned_teacher_id", assignedTo)
+          .eq("date", date),
+      ]);
       if (cancelled) return;
-      const list = (data ?? []).map((r: { period: string | number }) => String(r.period));
-      setFreePeriods(list);
-      setPeriod((p) => (list.includes(p) ? p : ""));
+      const taken = (takenData ?? []).map((r: { period: string | number }) => String(r.period));
+      const free = (freeData ?? [])
+        .map((r: { period: string | number }) => String(r.period))
+        .filter((p) => !taken.includes(p));
+      setTakenPeriods(taken);
+      setFreePeriods(free);
+      setPeriod((p) => (free.includes(p) ? p : ""));
       setLoadingFree(false);
     })();
     return () => {
@@ -538,10 +551,15 @@ function AssignForm({
       toast.error("No substitute teacher selected");
       return;
     }
+    if (takenPeriods.includes(period)) {
+      toast.error("This teacher is already assigned for this period");
+      return;
+    }
     if (!freePeriods.includes(period)) {
       toast.error("This period is not marked free by the teacher");
       return;
     }
+
     setSaving(true);
     const { data: userRes } = await supabase.auth.getUser();
     const { error } = await supabase.from("substitutions").insert({
