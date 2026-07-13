@@ -505,11 +505,41 @@ function AssignForm({
   const [assignedTo, setAssignedTo] = useState(prefillId ?? substitutes[0]?.id ?? "");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [saving, setSaving] = useState(false);
+  const [freePeriods, setFreePeriods] = useState<string[]>([]);
+  const [loadingFree, setLoadingFree] = useState(false);
+
+  useEffect(() => {
+    if (!assignedTo || !date) {
+      setFreePeriods([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoadingFree(true);
+      const { data } = await supabase
+        .from("free_periods")
+        .select("period")
+        .eq("user_id", assignedTo)
+        .eq("date", date);
+      if (cancelled) return;
+      const list = (data ?? []).map((r: { period: string | number }) => String(r.period));
+      setFreePeriods(list);
+      setPeriod((p) => (list.includes(p) ? p : ""));
+      setLoadingFree(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [assignedTo, date]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!assignedTo) {
       toast.error("No substitute teacher selected");
+      return;
+    }
+    if (!freePeriods.includes(period)) {
+      toast.error("This period is not marked free by the teacher");
       return;
     }
     setSaving(true);
@@ -533,6 +563,8 @@ function AssignForm({
     onSaved();
   }
 
+  const noFree = !loadingFree && !!assignedTo && freePeriods.length === 0;
+
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center">
       <div className="bg-card w-full sm:max-w-md sm:rounded-2xl rounded-t-3xl p-5 max-h-[90vh] overflow-y-auto">
@@ -552,26 +584,15 @@ function AssignForm({
               placeholder="e.g. Mr. Ahmed"
             />
           </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Class">
-              <input
-                required
-                value={className}
-                onChange={(e) => setClassName(e.target.value)}
-                className="input"
-                placeholder="9-B"
-              />
-            </Field>
-            <Field label="Period">
-              <input
-                required
-                value={period}
-                onChange={(e) => setPeriod(e.target.value)}
-                className="input"
-                placeholder="3"
-              />
-            </Field>
-          </div>
+          <Field label="Class">
+            <input
+              required
+              value={className}
+              onChange={(e) => setClassName(e.target.value)}
+              className="input"
+              placeholder="9-B"
+            />
+          </Field>
           <Field label="Subject">
             <input
               required
@@ -615,9 +636,43 @@ function AssignForm({
               })}
             </select>
           </Field>
+          <Field label="Period (only free periods)">
+            {loadingFree ? (
+              <div className="text-xs text-muted-foreground py-2 inline-flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" /> Loading free periods…
+              </div>
+            ) : noFree ? (
+              <div className="text-xs text-destructive py-2">
+                This teacher has not marked any free periods on {date}.
+              </div>
+            ) : (
+              <select
+                required
+                value={period}
+                onChange={(e) => setPeriod(e.target.value)}
+                className="input"
+              >
+                <option value="">Select a free period…</option>
+                {freePeriods
+                  .slice()
+                  .sort((a, b) => Number(a) - Number(b))
+                  .map((p) => (
+                    <option key={p} value={p}>
+                      Period {p}
+                    </option>
+                  ))}
+              </select>
+            )}
+          </Field>
           <button
             type="submit"
-            disabled={saving || substitutes.length === 0}
+            disabled={
+              saving ||
+              substitutes.length === 0 ||
+              loadingFree ||
+              freePeriods.length === 0 ||
+              !period
+            }
             className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {saving && <Loader2 className="h-4 w-4 animate-spin" />} Save Assignment
