@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS substitutions_teacher_date_period_uniq ON public.substitutions (assigned_teacher_id, date, period);
