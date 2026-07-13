@@ -661,8 +661,11 @@ function AssignForm({
               </div>
             ) : noFree ? (
               <div className="text-xs text-destructive py-2">
-                This teacher has not marked any free periods on {date}.
+                {takenPeriods.length > 0
+                  ? `All free periods for this teacher on ${date} are already assigned.`
+                  : `This teacher has not marked any free periods on ${date}.`}
               </div>
+
             ) : (
               <select
                 required
