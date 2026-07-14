@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
+import { deleteSubstituteTeacher } from "@/lib/admin.functions";
 import {
   LogOut,
   Plus,
@@ -56,6 +58,8 @@ function AssignerDashboard() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("assignments");
   const [filter, setFilter] = useState<Filter>("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const deleteTeacherFn = useServerFn(deleteSubstituteTeacher);
 
   useEffect(() => {
     if (!authLoading && role && role !== "assigner") {
@@ -104,6 +108,25 @@ function AssignerDashboard() {
     else {
       toast.success("Deleted");
       load();
+    }
+  }
+
+  async function handleDeleteTeacher(id: string, teacherName: string) {
+    if (
+      !window.confirm(
+        `Permanently delete ${teacherName}? This removes their account, profile, and access. This cannot be undone.`,
+      )
+    )
+      return;
+    setDeletingId(id);
+    try {
+      await deleteTeacherFn({ data: { userId: id } });
+      toast.success(`${teacherName} deleted`);
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete teacher");
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -346,6 +369,19 @@ function AssignerDashboard() {
                       className="h-9 px-3 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold inline-flex items-center gap-1 shrink-0"
                     >
                       Assign <ArrowRight className="h-3 w-3" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTeacher(s.id, s.name)}
+                      disabled={deletingId === s.id}
+                      className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0 disabled:opacity-50"
+                      aria-label={`Delete ${s.name}`}
+                      title="Permanently delete teacher"
+                    >
+                      {deletingId === s.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                 ))}
