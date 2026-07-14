@@ -370,6 +370,19 @@ function AssignerDashboard() {
                     >
                       Assign <ArrowRight className="h-3 w-3" />
                     </button>
+                    <button
+                      onClick={() => handleDeleteTeacher(s.id, s.name)}
+                      disabled={deletingId === s.id}
+                      className="h-9 w-9 grid place-items-center rounded-lg text-destructive hover:bg-destructive/10 shrink-0 disabled:opacity-50"
+                      aria-label={`Delete ${s.name}`}
+                      title="Permanently delete teacher"
+                    >
+                      {deletingId === s.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </button>
                   </div>
                 ))}
               </div>
