@@ -58,6 +58,8 @@ function AssignerDashboard() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("assignments");
   const [filter, setFilter] = useState<Filter>("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const deleteTeacherFn = useServerFn(deleteSubstituteTeacher);
 
   useEffect(() => {
     if (!authLoading && role && role !== "assigner") {
