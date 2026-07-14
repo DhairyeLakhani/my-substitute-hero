@@ -111,6 +111,25 @@ function AssignerDashboard() {
     }
   }
 
+  async function handleDeleteTeacher(id: string, teacherName: string) {
+    if (
+      !window.confirm(
+        `Permanently delete ${teacherName}? This removes their account, profile, and access. This cannot be undone.`,
+      )
+    )
+      return;
+    setDeletingId(id);
+    try {
+      await deleteTeacherFn({ data: { userId: id } });
+      toast.success(`${teacherName} deleted`);
+      load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete teacher");
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   async function signOut() {
     await supabase.auth.signOut();
     navigate({ to: "/" });
